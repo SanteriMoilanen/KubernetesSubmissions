@@ -18,7 +18,7 @@ spec:
           claimName: todo-claim
       containers:
       - name: todo-app
-        image: todo-app:1.1
+        image: todo-app:1.2
         imagePullPolicy: IfNotPresent
         env:
         - name: PORT

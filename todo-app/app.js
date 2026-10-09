@@ -49,6 +49,15 @@ const server = http.createServer(async (req, res) => {
         <body>
           <h1>Todo App</h1>
           <img src="/image" alt="Todo App" width="600">
+          <form onsubmit="event.preventDefault()">
+            <input type="text" name="todo" maxlength="140" required>
+            <button type="submit">Send</button>
+          </form>
+          <ul>
+            <li>Learn JavaScript</li>
+            <li>Learn React</li>
+            <li>Build a project</li>
+          </ul>
         </body>
       </html>
     `);
