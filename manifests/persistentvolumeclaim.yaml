@@ -4,6 +4,7 @@ metadata:
   name: common-claim
 spec:
   storageClassName: manual
+  volumeName: example-pv
   accessModes:
     - ReadWriteOnce
   resources:

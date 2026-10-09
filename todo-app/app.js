@@ -1,8 +1,43 @@
 const http = require('http');
+const fs = require('fs');
+
+const PICTURE_PATH = '/usr/src/app/files/random-pic.png';
+const MAX_AGE_MS = 10 * 60 * 1000;
 
 const PORT = process.env.PORT || 3001;
 
-const server = http.createServer((req, res) => {
+let downloading = null;
+
+const downloadPicture = () => {
+  downloading ??= (async () => {
+    const response = await fetch('https://picsum.photos/1200');
+    const data = Buffer.from(await response.arrayBuffer());
+    // write then rename so a half-written file is never served
+    fs.writeFileSync(`${PICTURE_PATH}.tmp`, data);
+    fs.renameSync(`${PICTURE_PATH}.tmp`, PICTURE_PATH);
+    console.log('Downloaded new picture');
+  })().finally(() => {
+    downloading = null;
+  });
+  return downloading;
+};
+
+const getPicture = async () => {
+  let stat;
+  try {
+    stat = fs.statSync(PICTURE_PATH);
+  } catch {
+    await downloadPicture();
+    return fs.readFileSync(PICTURE_PATH);
+  }
+  // stale: serve the old picture once more, next request gets the new one
+  if (Date.now() - stat.mtimeMs > MAX_AGE_MS) {
+    downloadPicture().catch((err) => console.error('Picture download failed:', err));
+  }
+  return fs.readFileSync(PICTURE_PATH);
+};
+
+const server = http.createServer(async (req, res) => {
   if (req.url === '/') {
     res.writeHead(200, {
       'Content-Type': 'text/html'
@@ -13,12 +48,31 @@ const server = http.createServer((req, res) => {
       <html>
         <body>
           <h1>Todo App</h1>
-          <p>Application is running!</p>
+          <img src="/image" alt="Todo App" width="600">
         </body>
       </html>
     `);
 
     return;
+  }
+
+  if (req.url === '/image') {
+    try {
+      const data = await getPicture();
+      res.writeHead(200, { 'Content-Type': 'image/jpeg' });
+      res.end(data);
+    } catch (err) {
+      console.error(err);
+      res.statusCode = 502;
+      res.end('Could not get picture');
+    }
+    return;
+  }
+
+  // for testing: kill the container, Kubernetes restarts it
+  if (req.url === '/shutdown') {
+    res.end('Shutting down');
+    process.exit(1);
   }
 
   res.statusCode = 404;
