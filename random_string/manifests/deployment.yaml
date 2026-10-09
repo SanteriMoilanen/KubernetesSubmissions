@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-strings-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: random-strings
+  template:
+    metadata:
+      labels:
+        app: random-strings
+    spec:
+      volumes:
+      - name: log-volume
+        emptyDir: {}
+      containers:
+      - name: random-string-reader
+        image: random-string-reader:1.0
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: log-volume
+          mountPath: /usr/src/app/files
+      - name: random-string-writer
+        image: random-string-writer:1.0
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: log-volume
+          mountPath: /usr/src/app/files

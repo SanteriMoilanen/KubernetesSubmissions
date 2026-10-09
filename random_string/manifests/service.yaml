@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: log-output-svc
+  name: random-strings-svc
 spec:
   type: ClusterIP
   selector:
-    app: log-output
+    app: random-strings
   ports:
     - port: 2345
       protocol: TCP
