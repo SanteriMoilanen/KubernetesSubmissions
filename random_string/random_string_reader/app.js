@@ -2,20 +2,19 @@ const http = require('http');
 const fs = require('fs');
 
 const PORT = process.env.PORT || 3000;
+const PINGPONG_URL = process.env.PINGPONG_URL || 'http://ping-pong-svc:2345/pings';
 
-const read = (file, fallback) => {
+http.createServer(async (req, res) => {
+  let logEntry = 'No logs yet';
   try {
-    return fs.readFileSync(file, 'utf-8');
-  } catch {
-    return fallback;
-  }
-};
+    logEntry = fs.readFileSync('/usr/src/app/files/log.txt', 'utf-8');
+  } catch {}
 
-http.createServer((req, res) => {
+  let pongs = 'unavailable';
+  try {
+    pongs = await (await fetch(PINGPONG_URL)).text();
+  } catch {}
+
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-
-  const logEntry = read('/usr/src/app/files/log.txt', 'No logs yet');
-  const pongs = read('/usr/src/app/files/pingpong.txt', '0');
-
   res.end(`${logEntry}\nPing / Pongs: ${pongs}`);
 }).listen(PORT);

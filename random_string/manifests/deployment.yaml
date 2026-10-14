@@ -13,19 +13,18 @@ spec:
         app: random-strings
     spec:
       volumes:
-      - name: common-volume
-        persistentVolumeClaim:
-          claimName: common-claim
+      - name: shared-log
+        emptyDir: {}
       containers:
       - name: random-string-reader
-        image: random-string-reader:1.1
+        image: random-string-reader:1.2
         imagePullPolicy: IfNotPresent
         volumeMounts:
-        - name: common-volume
+        - name: shared-log
           mountPath: /usr/src/app/files
       - name: random-string-writer
-        image: random-string-writer:1.0
+        image: random-string-writer:1.1
         imagePullPolicy: IfNotPresent
         volumeMounts:
-        - name: common-volume
+        - name: shared-log
           mountPath: /usr/src/app/files
