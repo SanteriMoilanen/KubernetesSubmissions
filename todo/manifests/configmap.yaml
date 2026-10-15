@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-config
+  namespace: project
+data:
+  PICTURE_PATH: /usr/src/app/files/random-pic.png
+  PICTURE_MAX_AGE_MS: "600000"
+  PICTURE_URL: https://picsum.photos/1200
+  BACKEND_URL: http://todo-app-be-svc:3000/todos

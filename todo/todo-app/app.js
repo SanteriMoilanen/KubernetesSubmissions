@@ -1,16 +1,16 @@
 const http = require('http');
 const fs = require('fs');
 
-const PICTURE_PATH = '/usr/src/app/files/random-pic.png';
-const MAX_AGE_MS = 10 * 60 * 1000;
+const PICTURE_PATH = process.env.PICTURE_PATH;
+const MAX_AGE_MS = Number(process.env.PICTURE_MAX_AGE_MS);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 let downloading = null;
 
 const downloadPicture = () => {
   downloading ??= (async () => {
-    const response = await fetch('https://picsum.photos/1200');
+    const response = await fetch(process.env.PICTURE_URL);
     const data = Buffer.from(await response.arrayBuffer());
     // write then rename so a half-written file is never served
     fs.writeFileSync(`${PICTURE_PATH}.tmp`, data);
@@ -43,7 +43,7 @@ const server = http.createServer(async (req, res) => {
       'Content-Type': 'text/html'
     });
 
-    const todos = await fetch('http://todo-app-be-svc:3000/todos').then(r => r.json());
+    const todos = await fetch(process.env.BACKEND_URL).then(r => r.json());
 
     res.end(`
       <!DOCTYPE html>
