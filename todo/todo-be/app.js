@@ -11,6 +11,7 @@ const init = async () => {
 const PORT = process.env.PORT;
 
 http.createServer(async (req, res) => {
+  console.log(`${req.method} ${req.url}`);
   try {
     if (req.url === '/todos' && req.method === 'GET') {
       const { rows } = await pool.query('SELECT * FROM todo ORDER BY id');
@@ -21,6 +22,12 @@ http.createServer(async (req, res) => {
       let body = '';
       for await (const chunk of req) body += chunk;
       const { todo } = JSON.parse(body);
+      if (typeof todo !== 'string' || todo.length === 0 || todo.length > 140) {
+        console.error(`Rejected todo (${todo?.length} chars): ${todo}`);
+        res.writeHead(400);
+        return res.end('Todo must be 1-140 characters');
+      }
+      console.log(`New todo: ${todo}`);
       const { rows } = await pool.query('INSERT INTO todo (todo) VALUES ($1) RETURNING *', [todo]);
       res.writeHead(201, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(rows[0]));
