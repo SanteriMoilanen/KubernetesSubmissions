@@ -2,6 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: todo-app-ingress
+  namespace: project
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: todo
 spec:
   rules:
   - http:
