@@ -1,27 +1,41 @@
 const http = require('http');
+const { Pool } = require('pg');
+
+// connection settings come from PGHOST, PGUSER, PGPASSWORD, ... env variables
+const pool = new Pool();
+
+const init = async () => {
+  await pool.query('CREATE TABLE IF NOT EXISTS todo (id SERIAL PRIMARY KEY, todo TEXT NOT NULL)');
+};
 
 const PORT = process.env.PORT;
 
-let todos = [];
-
-http.createServer((req, res) => {
-  if (req.url === '/todos' && req.method === 'GET') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    return res.end(JSON.stringify(todos));
-  }
-  else if (req.url === '/todos' && req.method === 'POST') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      const todo = JSON.parse(body);
-      todos.push(todo);
-      return res.end(JSON.stringify(todo));
-    });
-    return;
+http.createServer(async (req, res) => {
+  try {
+    if (req.url === '/todos' && req.method === 'GET') {
+      const { rows } = await pool.query('SELECT * FROM todo ORDER BY id');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(rows));
+    }
+    if (req.url === '/todos' && req.method === 'POST') {
+      let body = '';
+      for await (const chunk of req) body += chunk;
+      const { todo } = JSON.parse(body);
+      const { rows } = await pool.query('INSERT INTO todo (todo) VALUES ($1) RETURNING *', [todo]);
+      res.writeHead(201, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(rows[0]));
+    }
+  } catch (err) {
+    console.error(err);
+    res.writeHead(500);
+    return res.end('Server error');
   }
   res.writeHead(404);
   res.end();
 }).listen(PORT);
+
+// db not ready yet -> crash, Kubernetes restarts the pod and we retry
+init().catch((err) => {
+  console.error('Database init failed:', err.message);
+  process.exit(1);
+});

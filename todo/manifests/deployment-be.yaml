@@ -15,8 +15,17 @@ spec:
     spec:
       containers:
       - name: todo-app-be
-        image: todo-app-be:1.1
+        image: todo-app-be:1.2
         imagePullPolicy: IfNotPresent
         env:
         - name: PORT
           value: "3000"
+        - name: PGHOST
+          value: postgres-svc
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
