@@ -4,7 +4,7 @@ const fs = require('fs');
 const PICTURE_PATH = '/usr/src/app/files/random-pic.png';
 const MAX_AGE_MS = 10 * 60 * 1000;
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 let downloading = null;
 
@@ -43,20 +43,20 @@ const server = http.createServer(async (req, res) => {
       'Content-Type': 'text/html'
     });
 
+    const todos = await fetch('http://todo-app-be-svc:3000/todos').then(r => r.json());
+
     res.end(`
       <!DOCTYPE html>
       <html>
         <body>
           <h1>Todo App</h1>
           <img src="/image" alt="Todo App" width="600">
-          <form onsubmit="event.preventDefault()">
+          <form onsubmit="event.preventDefault(); fetch('/todos', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ todo: this.todo.value }) }).then(() => location.reload())">
             <input type="text" name="todo" maxlength="140" required>
             <button type="submit">Send</button>
           </form>
           <ul>
-            <li>Learn JavaScript</li>
-            <li>Learn React</li>
-            <li>Build a project</li>
+            ${todos.map(todo => `<li>${todo.todo}</li>`).join('')}
           </ul>
         </body>
       </html>
