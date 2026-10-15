@@ -10,11 +10,16 @@ http.createServer(async (req, res) => {
     logEntry = fs.readFileSync('/usr/src/app/files/log.txt', 'utf-8');
   } catch {}
 
+  let info = '';
+  try {
+    info = fs.readFileSync('/usr/src/app/config/information.txt', 'utf-8').trim();
+  } catch {}
+
   let pongs = 'unavailable';
   try {
     pongs = await (await fetch(PINGPONG_URL)).text();
   } catch {}
 
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end(`${logEntry}\nPing / Pongs: ${pongs}`);
+  res.end(`file content: ${info}\nenv variable: MESSAGE=${process.env.MESSAGE}\n${logEntry}\nPing / Pongs: ${pongs}`);
 }).listen(PORT);

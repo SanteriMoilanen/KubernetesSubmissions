@@ -16,13 +16,27 @@ spec:
       volumes:
       - name: shared-log
         emptyDir: {}
+      - name: config
+        configMap:
+          name: log-output-config
+          items:
+          - key: information.txt
+            path: information.txt
       containers:
       - name: random-string-reader
-        image: random-string-reader:1.2
+        image: random-string-reader:1.3
         imagePullPolicy: IfNotPresent
+        env:
+        - name: MESSAGE
+          valueFrom:
+            configMapKeyRef:
+              name: log-output-config
+              key: MESSAGE
         volumeMounts:
         - name: shared-log
           mountPath: /usr/src/app/files
+        - name: config
+          mountPath: /usr/src/app/config
       - name: random-string-writer
         image: random-string-writer:1.1
         imagePullPolicy: IfNotPresent
