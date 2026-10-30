@@ -4,7 +4,7 @@ metadata:
   name: random-strings-svc
   namespace: exercises
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: random-strings
   ports:

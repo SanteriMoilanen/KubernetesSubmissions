@@ -15,6 +15,11 @@ http.createServer(async (req, res) => {
     res.writeHead(404);
     return res.end();
   }
+  // GKE Ingress health check hits / and needs a 200
+  if (req.url === '/') {
+    res.writeHead(200);
+    return res.end('ok');
+  }
   try {
     if (req.url === '/pingpong') {
       // returns the value before increment: pong 0, pong 1, ...

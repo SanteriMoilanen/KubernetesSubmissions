@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: ping-pong
-        image: smoilanen/ping-pong:1.3
+        image: smoilanen/ping-pong:1.4
         env:
         - name: PGHOST
           value: postgres-svc
