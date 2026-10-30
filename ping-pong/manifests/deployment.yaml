@@ -15,8 +15,7 @@ spec:
     spec:
       containers:
       - name: ping-pong
-        image: ping-pong:1.3
-        imagePullPolicy: IfNotPresent
+        image: smoilanen/ping-pong:1.3
         env:
         - name: PGHOST
           value: postgres-svc
