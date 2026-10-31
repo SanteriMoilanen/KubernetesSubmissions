@@ -5,6 +5,8 @@ metadata:
   namespace: project
 spec:
   replicas: 1
+  strategy:
+    type: Recreate  # RWO volume can't be mounted by old and new pod at once
   selector:
     matchLabels:
       app: todo-app
