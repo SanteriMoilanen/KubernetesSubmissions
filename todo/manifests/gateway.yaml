@@ -1,0 +1,31 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: todo-gateway
+  namespace: project
+spec:
+  gatewayClassName: gke-l7-global-external-managed
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    allowedRoutes:
+      kinds:
+      - kind: HTTPRoute
+---
+# backend has no "/" route; GKE health checks default to "/"
+apiVersion: networking.gke.io/v1
+kind: HealthCheckPolicy
+metadata:
+  name: todo-app-be-healthcheck
+  namespace: project
+spec:
+  default:
+    config:
+      type: HTTP
+      httpHealthCheck:
+        requestPath: /todos
+  targetRef:
+    group: ""
+    kind: Service
+    name: todo-app-be-svc
