@@ -17,6 +17,7 @@ env:
   REGISTRY: europe-north1-docker.pkg.dev
   REPOSITORY: my-repository
   BRANCH: ${{ github.ref_name }}
+  NAMESPACE: ${{ github.ref_name == 'main' && 'project' || github.ref_name }}
 
 defaults:
   run:
@@ -69,8 +70,9 @@ jobs:
 
       - name: Deploy
         run: |-
+          kustomize edit set namespace $NAMESPACE
           kustomize edit set image PROJECT/TODO-APP=$APP_IMAGE PROJECT/TODO-APP-BE=$BE_IMAGE
           kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment todo-app -n project
-          kubectl rollout status deployment todo-app-be -n project
-          kubectl get services -o wide -n project
+          kubectl rollout status deployment todo-app -n $NAMESPACE
+          kubectl rollout status deployment todo-app-be -n $NAMESPACE
+          kubectl get gateway,services -o wide -n $NAMESPACE
