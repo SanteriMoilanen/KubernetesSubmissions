@@ -13,6 +13,13 @@ spec:
           containers:
           - name: wiki-todo
             image: curlimages/curl:8.11.1
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                cpu: 100m
+                memory: 32Mi
             envFrom:
             - configMapRef:
                 name: todo-config    # reuses BACKEND_URL

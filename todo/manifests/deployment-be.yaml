@@ -16,6 +16,13 @@ spec:
       containers:
       - name: todo-app-be
         image: PROJECT/TODO-APP-BE
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 128Mi
         env:
         - name: PORT
           value: "3000"
