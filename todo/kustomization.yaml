@@ -12,6 +12,7 @@ resources:
   - manifests/gateway.yaml
   - manifests/route.yaml
   - manifests/cronjob.yaml
+  - manifests/db-backup-cronjob.yaml
 images:
   - name: PROJECT/TODO-APP
     newName: smoilanen/todo-app

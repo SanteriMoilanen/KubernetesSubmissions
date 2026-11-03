@@ -1,0 +1,56 @@
+# Uses Workload Identity: backup-sa is granted storage access in IAM, no key needed
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backup-sa
+  namespace: project
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+  namespace: project
+spec:
+  schedule: "0 3 * * *"          # once a day at 03:00 UTC
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: backup-sa
+          restartPolicy: OnFailure
+          volumes:
+          - name: dump
+            emptyDir: {}
+          initContainers:
+          - name: pg-dump
+            image: postgres:16-alpine
+            env:
+            - name: PGHOST
+              value: postgres-svc
+            - name: PGUSER
+              value: postgres
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            command: ["sh", "-c", "pg_dump -f /dump/todo.sql postgres"]
+            volumeMounts:
+            - name: dump
+              mountPath: /dump
+          containers:
+          - name: upload
+            image: gcr.io/google.com/cloudsdktool/google-cloud-cli:alpine
+            env:
+            - name: BUCKET
+              value: todo-backups-project-98713db6
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            command: ["sh", "-c"]
+            args:
+            - gcloud storage cp /dump/todo.sql "gs://$BUCKET/$NAMESPACE/todo-$(date +%Y-%m-%d-%H%M).sql"
+            volumeMounts:
+            - name: dump
+              mountPath: /dump
