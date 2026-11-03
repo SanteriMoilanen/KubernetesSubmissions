@@ -37,8 +37,9 @@ http.createServer(async (req, res) => {
   res.end();
 }).listen(PORT);
 
-// db not ready yet -> crash, Kubernetes restarts the pod and we retry
-init().catch((err) => {
+// db not ready yet -> retry; readinessProbe keeps the pod out of rotation meanwhile
+const tryInit = () => init().catch((err) => {
   console.error('Database init failed:', err.message);
-  process.exit(1);
+  setTimeout(tryInit, 5000);
 });
+tryInit();

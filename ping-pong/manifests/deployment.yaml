@@ -15,7 +15,20 @@ spec:
     spec:
       containers:
       - name: ping-pong
-        image: smoilanen/ping-pong:1.5
+        image: smoilanen/ping-pong:1.6
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        readinessProbe:
+          httpGet:
+            path: /pings
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
         env:
         - name: PGHOST
           value: postgres-svc
