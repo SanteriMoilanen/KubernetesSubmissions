@@ -78,8 +78,13 @@ const server = http.createServer(async (req, res) => {
             <button type="submit">Send</button>
           </form>
           <button onclick="fetch('/break', { method: 'POST' }).then(() => location.reload())">Break app</button>
+          <h2>Todo</h2>
           <ul>
-            ${todos.map(todo => `<li>${todo.todo}</li>`).join('')}
+            ${todos.filter(t => !t.done).map(t => `<li>${t.todo} <button onclick="fetch('/todos/${t.id}', { method: 'PUT' }).then(() => location.reload())">Mark as done</button></li>`).join('')}
+          </ul>
+          <h2>Done</h2>
+          <ul>
+            ${todos.filter(t => t.done).map(t => `<li>${t.todo}</li>`).join('')}
           </ul>
         </body>
       </html>

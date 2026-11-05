@@ -6,6 +6,7 @@ const pool = new Pool();
 
 const init = async () => {
   await pool.query('CREATE TABLE IF NOT EXISTS todo (id SERIAL PRIMARY KEY, todo TEXT NOT NULL)');
+  await pool.query('ALTER TABLE todo ADD COLUMN IF NOT EXISTS done BOOLEAN NOT NULL DEFAULT false');
 };
 
 const PORT = process.env.PORT;
@@ -35,6 +36,17 @@ http.createServer(async (req, res) => {
       console.log(`New todo: ${todo}`);
       const { rows } = await pool.query('INSERT INTO todo (todo) VALUES ($1) RETURNING *', [todo]);
       res.writeHead(201, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(rows[0]));
+    }
+    const match = req.url.match(/^\/todos\/(\d+)$/);
+    if (match && req.method === 'PUT') {
+      const { rows } = await pool.query('UPDATE todo SET done = true WHERE id = $1 RETURNING *', [match[1]]);
+      if (rows.length === 0) {
+        res.writeHead(404);
+        return res.end('Todo not found');
+      }
+      console.log(`Todo ${match[1]} done`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(rows[0]));
     }
   } catch (err) {
