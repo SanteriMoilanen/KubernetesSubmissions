@@ -13,6 +13,11 @@ const PORT = process.env.PORT;
 http.createServer(async (req, res) => {
   console.log(`${req.method} ${req.url}`);
   try {
+    if (req.url === '/healthz') {
+      await pool.query('SELECT 1');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ status: 'ok' }));
+    }
     if (req.url === '/todos' && req.method === 'GET') {
       const { rows } = await pool.query('SELECT * FROM todo ORDER BY id');
       res.writeHead(200, { 'Content-Type': 'application/json' });

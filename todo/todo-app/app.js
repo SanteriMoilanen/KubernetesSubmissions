@@ -37,7 +37,29 @@ const getPicture = async () => {
   return fs.readFileSync(PICTURE_PATH);
 };
 
+// flipped by the "Break app" button; only a restart makes it healthy again
+let isHealthy = true;
+
 const server = http.createServer(async (req, res) => {
+  if (req.url === '/healthz') {
+    // healthy = not broken and backend (and its db) answers
+    const backendOk = isHealthy && await fetch(new URL('/healthz', process.env.BACKEND_URL))
+      .then(r => r.ok, () => false);
+    res.writeHead(backendOk ? 200 : 500, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ status: backendOk ? 'ok' : 'unhealthy' }));
+  }
+
+  if (req.url === '/break' && req.method === 'POST') {
+    isHealthy = false;
+    console.log('App broken on purpose');
+    return res.end('Broken');
+  }
+
+  if (!isHealthy) {
+    res.statusCode = 500;
+    return res.end('App is broken');
+  }
+
   if (req.url === '/') {
     res.writeHead(200, {
       'Content-Type': 'text/html'
@@ -55,6 +77,7 @@ const server = http.createServer(async (req, res) => {
             <input type="text" name="todo" maxlength="140" required>
             <button type="submit">Send</button>
           </form>
+          <button onclick="fetch('/break', { method: 'POST' }).then(() => location.reload())">Break app</button>
           <ul>
             ${todos.map(todo => `<li>${todo.todo}</li>`).join('')}
           </ul>
