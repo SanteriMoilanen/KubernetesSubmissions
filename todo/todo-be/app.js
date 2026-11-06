@@ -1,5 +1,6 @@
 const http = require('http');
 const { Pool } = require('pg');
+const { connect, StringCodec } = require('nats');
 
 // connection settings come from PGHOST, PGUSER, PGPASSWORD, ... env variables
 const pool = new Pool();
@@ -10,6 +11,14 @@ const init = async () => {
 };
 
 const PORT = process.env.PORT;
+
+// NATS is best-effort: a lost message is acceptable, so never fail a request over it
+const sc = StringCodec();
+let nc;
+connect({ servers: process.env.NATS_URL, waitOnFirstConnect: true })
+  .then((c) => { nc = c; console.log('Connected to NATS'); })
+  .catch((err) => console.error('NATS connect failed:', err.message));
+const broadcast = (message) => nc?.publish('todos', sc.encode(message));
 
 http.createServer(async (req, res) => {
   console.log(`${req.method} ${req.url}`);
@@ -35,6 +44,7 @@ http.createServer(async (req, res) => {
       }
       console.log(`New todo: ${todo}`);
       const { rows } = await pool.query('INSERT INTO todo (todo) VALUES ($1) RETURNING *', [todo]);
+      broadcast(`A todo was created: ${rows[0].todo}`);
       res.writeHead(201, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(rows[0]));
     }
@@ -46,6 +56,7 @@ http.createServer(async (req, res) => {
         return res.end('Todo not found');
       }
       console.log(`Todo ${match[1]} done`);
+      broadcast(`A todo was marked done: ${rows[0].todo}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(rows[0]));
     }

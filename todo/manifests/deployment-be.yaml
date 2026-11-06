@@ -35,6 +35,9 @@ spec:
           httpGet:
               path: /healthz
               port: 3000
+        envFrom:
+        - configMapRef:
+            name: todo-config    # NATS_URL
         env:
         - name: PORT
           value: "3000"

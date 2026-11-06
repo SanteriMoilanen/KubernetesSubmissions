@@ -8,3 +8,4 @@ data:
   PICTURE_MAX_AGE_MS: "600000"
   PICTURE_URL: https://picsum.photos/1200
   BACKEND_URL: http://todo-app-be-svc:3000/todos
+  NATS_URL: nats://my-nats.nats:4222

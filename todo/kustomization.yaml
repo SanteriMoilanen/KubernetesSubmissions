@@ -7,6 +7,7 @@ resources:
   - manifests/postgres.yaml
   - manifests/deployment.yaml
   - manifests/deployment-be.yaml
+  - manifests/deployment-broadcaster.yaml
   - manifests/service.yaml
   - manifests/service-be.yaml
   - manifests/gateway.yaml
@@ -18,4 +19,7 @@ images:
     newTag: "1.6"
   - name: PROJECT/TODO-APP-BE
     newName: smoilanen/todo-app-be
-    newTag: "1.5"
+    newTag: "1.6"
+  - name: PROJECT/BROADCASTER
+    newName: smoilanen/todo-broadcaster
+    newTag: "1.0"
