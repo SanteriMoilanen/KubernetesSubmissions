@@ -31,5 +31,5 @@ http.createServer(async (req, res) => {
   } catch {}
 
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end(`file content: ${info}\nenv variable: MESSAGE=${process.env.MESSAGE}\n${logEntry}\nPing / Pongs: ${pongs}`);
+  res.end(`file content: ${info}\nenvironment variable: MESSAGE=${process.env.MESSAGE}\n${logEntry}\nPing / Pongs: ${pongs}`);
 }).listen(PORT);
