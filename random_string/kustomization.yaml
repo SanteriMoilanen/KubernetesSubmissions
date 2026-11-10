@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - manifests/configmap.yaml
+  - manifests/deployment.yaml
+  - manifests/service.yaml
+  - manifests/gateway.yaml
+  - manifests/route.yaml
+images:
+  - name: PROJECT/READER
+    newName: smoilanen/random-string-reader
+    newTag: "1.4"
+  - name: PROJECT/WRITER
+    newName: smoilanen/random-string-writer
+    newTag: "1.1"

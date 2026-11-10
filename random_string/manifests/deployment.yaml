@@ -24,7 +24,7 @@ spec:
             path: information.txt
       containers:
       - name: random-string-reader
-        image: smoilanen/random-string-reader:1.4
+        image: PROJECT/READER
         readinessProbe:
           httpGet:
             path: /healthz
@@ -42,7 +42,7 @@ spec:
         - name: config
           mountPath: /usr/src/app/config
       - name: random-string-writer
-        image: smoilanen/random-string-writer:1.1
+        image: PROJECT/WRITER
         volumeMounts:
         - name: shared-log
           mountPath: /usr/src/app/files
