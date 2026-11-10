@@ -23,7 +23,7 @@ const broadcast = (message) => nc?.publish('todos', sc.encode(message));
 http.createServer(async (req, res) => {
   console.log(`${req.method} ${req.url}`);
   try {
-    if (req.url === '/healthz') {
+    if (req.url === '/healthz') { 
       await pool.query('SELECT 1');
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ status: 'ok' }));
