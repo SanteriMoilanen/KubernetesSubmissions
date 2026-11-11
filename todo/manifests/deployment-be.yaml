@@ -13,6 +13,8 @@ spec:
       labels:
         app: todo-app-be
     spec:
+      securityContext:
+        runAsNonRoot: true
       containers:
       - name: todo-app-be
         image: PROJECT/TODO-APP-BE

@@ -15,6 +15,9 @@ spec:
       labels:
         app: todo-app
     spec:
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 1000  # node user can write to the PVC
       volumes:
       - name: todo-volume
         persistentVolumeClaim:

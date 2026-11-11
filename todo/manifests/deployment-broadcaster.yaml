@@ -13,6 +13,8 @@ spec:
       labels:
         app: broadcaster
     spec:
+      securityContext:
+        runAsNonRoot: true
       containers:
       - name: broadcaster
         image: PROJECT/BROADCASTER
