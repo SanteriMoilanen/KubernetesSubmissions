@@ -16,10 +16,10 @@ resources:
 images:
 - name: PROJECT/BROADCASTER
   newName: smoilanen/todo-broadcaster
-  newTag: 81482121af847776dffbf078a9d5d84135abf1ad
+  newTag: 3d5dc82702174cadc50617b7fd2c7b6f1b729a28
 - name: PROJECT/TODO-APP
   newName: smoilanen/todo-app
-  newTag: 81482121af847776dffbf078a9d5d84135abf1ad
+  newTag: 3d5dc82702174cadc50617b7fd2c7b6f1b729a28
 - name: PROJECT/TODO-APP-BE
   newName: smoilanen/todo-app-be
-  newTag: 81482121af847776dffbf078a9d5d84135abf1ad
+  newTag: 3d5dc82702174cadc50617b7fd2c7b6f1b729a28
