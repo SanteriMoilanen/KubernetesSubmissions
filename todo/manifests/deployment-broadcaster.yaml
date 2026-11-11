@@ -18,6 +18,10 @@ spec:
       containers:
       - name: broadcaster
         image: PROJECT/BROADCASTER
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
         resources:
           requests:
             cpu: 10m
