@@ -11,9 +11,10 @@ resources:
 images:
 - name: PROJECT/GREETER
   newName: smoilanen/greeter
+  newTag: 452627fb76c4d153421048bddd3bc13e316bc462
 - name: PROJECT/READER
   newName: smoilanen/random-string-reader
-  newTag: d6003f9114f5f13e5ddd9cc6b6b4024221e7dc45
+  newTag: 452627fb76c4d153421048bddd3bc13e316bc462
 - name: PROJECT/WRITER
   newName: smoilanen/random-string-writer
-  newTag: d6003f9114f5f13e5ddd9cc6b6b4024221e7dc45
+  newTag: 452627fb76c4d153421048bddd3bc13e316bc462
