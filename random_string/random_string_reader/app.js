@@ -2,7 +2,8 @@ const http = require('http');
 const fs = require('fs');
 
 const PORT = process.env.PORT || 3000;
-const PINGPONG_URL = process.env.PINGPONG_URL || 'http://ping-pong-svc:2345/pings';
+const GREETER_URL = process.env.GREETER_URL || 'http://greeter-svc:2345';
+const PINGPONG_URL =process.env.PINGPONG_URL || 'http://ping-pong-svc:2345/pings';
 
 http.createServer(async (req, res) => {
   // readiness: ready only when ping-pong answers
@@ -30,6 +31,11 @@ http.createServer(async (req, res) => {
     pongs = await (await fetch(PINGPONG_URL)).text();
   } catch {}
 
+  let greeting = 'unavailable';
+  try {
+    greeting = await (await fetch(GREETER_URL)).text();
+  } catch {}
+
   res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end(`file content: ${info}\nenvironment variable: MESSAGE=${process.env.MESSAGE}\n${logEntry}\nPing / Pongs: ${pongs}`);
+  res.end(`file content: ${info}\nenvironment variable: MESSAGE=${process.env.MESSAGE}\n${logEntry}\nPing / Pongs: ${pongs}\ngreetings: ${greeting}`);
 }).listen(PORT);

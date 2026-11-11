@@ -6,7 +6,11 @@ resources:
 - manifests/service.yaml
 - manifests/gateway.yaml
 - manifests/route.yaml
+- manifests/greeter.yaml
+- manifests/waypoint.yaml
 images:
+- name: PROJECT/GREETER
+  newName: smoilanen/greeter
 - name: PROJECT/READER
   newName: smoilanen/random-string-reader
   newTag: d6003f9114f5f13e5ddd9cc6b6b4024221e7dc45

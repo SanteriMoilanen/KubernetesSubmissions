@@ -20,11 +20,14 @@ jobs:
           docker build -t smoilanen/random-string-writer:$GITHUB_SHA random_string_writer
           docker push smoilanen/random-string-reader:$GITHUB_SHA
           docker push smoilanen/random-string-writer:$GITHUB_SHA
+          docker build -t smoilanen/greeter:$GITHUB_SHA greeter
+          docker push smoilanen/greeter:$GITHUB_SHA
       - uses: imranismail/setup-kustomize@v3
       - name: Set images
         run: |
           kustomize edit set image PROJECT/READER=smoilanen/random-string-reader:$GITHUB_SHA
           kustomize edit set image PROJECT/WRITER=smoilanen/random-string-writer:$GITHUB_SHA
+          kustomize edit set image PROJECT/GREETER=smoilanen/greeter:$GITHUB_SHA
       - uses: EndBug/add-and-commit@v10
         with:
           add: random_string/kustomization.yaml
